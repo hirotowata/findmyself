@@ -1,0 +1,112 @@
+//
+//  QustionIndaiViewController.swift
+//  findmyself
+//
+//  Created by 渡邉寛都 on 2020/05/04.
+//  Copyright © 2020 WatanbeHiroto. All rights reserved.
+//
+
+import UIKit
+import NCMB
+
+class QuestinIndaiViewController: UIViewController {
+    
+    var point: Int = 0
+    var quizNumber: Int = 0
+    var quizArray: [Quiz] = []
+    
+    @IBOutlet var quizImageView: UIImageView!
+    @IBOutlet var quizTextField: UITextField!
+    @IBOutlet var quizTextView: UITextView!
+    @IBOutlet var quizNumberLabel: UILabel!
+   // @IBOutlet var option1Button: UIButton!
+    @IBOutlet var option2Button: UIButton!
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        setUpQuiz()
+        showQuiz()
+        
+        
+        // Do any additional setup after loading the view.
+    }
+    
+    
+    func setUpQuiz() {
+        
+        let quiz1 = Quiz( text: "一番モチベが高くて頑張った体験は？", option2: "保存する" )
+        let quiz2 = Quiz(text: "なんで頑張った？きっかけは？", option2: "保存する")
+        let quiz3 = Quiz( text: "その状況に対してどう対処した？",  option2: "保存する")
+        let quiz4 = Quiz( text: "今の自分と比べてどう？",  option2: "保存する")
+        //
+        
+        quizArray.append(quiz1)
+        quizArray.append(quiz2)
+        quizArray.append(quiz3)
+        quizArray.append(quiz4)
+        
+        
+        
+        print(quizNumber)
+        print(1)
+        
+    }
+    func showQuiz() {
+        quizNumberLabel.text = String(quizNumber + 1) + "問目"
+        
+        quizTextField.text = quizArray[quizNumber].text
+      //  option1Button.setTitle(quizArray[quizNumber].option1, for: .normal)
+        option2Button.setTitle(quizArray[quizNumber].option2, for: .normal)
+        
+    }
+    
+    func resetQuiz() {
+        point = 0
+        quizNumber = 0
+        //self.quizArray = Quiz.shuffle(quizArray: self.quizArray)
+        self.showQuiz()
+    }
+    
+    func updateQuiz() {
+        quizNumber = quizNumber + 1
+        
+        if quizNumber == quizArray.count {
+            let alertText = "質問コーナーに戻って次へ行こう！"
+            let alertController = UIAlertController(title: "結果", message: alertText, preferredStyle: .alert)
+            let okAction = UIAlertAction(title: "OK", style: .default, handler: { (action) in
+                
+            })
+            alertController.addAction(okAction)
+            self.present(alertController, animated: true, completion: nil)
+            self.resetQuiz()
+            
+        } else {
+            showQuiz()
+        }
+        
+    }
+    
+//    @IBAction func option1(){
+//        //画面遷移
+//        
+//    }
+    @IBAction func save(){
+        
+        let object = NCMBObject(className:"Umessage")
+        object?.setObject(quizTextView.text, forKey: "memo")
+        object?.setObject(quizNumberLabel.text, forKey: "number")
+        object?.saveInBackground({ (error) in
+            if error != nil {
+                print(error)
+            } else {
+                self.updateQuiz()
+            }
+        })
+        //技術課題 保存 NCMB
+        
+        
+    }
+    
+}
+
